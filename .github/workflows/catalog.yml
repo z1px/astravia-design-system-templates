@@ -17,9 +17,10 @@ jobs:
       - run: node scripts/build-catalog.mjs --check
 
   purge:
-    # 客户端已经改成首选 raw（5 分钟新鲜），所以这一步不再是更新能否生效的关键路径。
-    # 保留只是让兜底源尽量别太旧：jsDelivr 对 @main 会缓存「分支→commit」的解析结果，
-    # purge 单个文件常常刷不掉它（实测 finished 之后内容仍是半天前的），别指望它。
+    # 实测客户端 astravia-ui-design 0.7.2 的取数顺序是 jsDelivr 在前、raw 在后，
+    # 所以 jsDelivr 仍发旧版本时 raw 根本不会被请求——purge 才是更新生效的关键路径。
+    # （仓库地址从 sikongyue 改到 maomaochong-ai 时这里漏改，导致改名后的几次 push
+    # 都刷到了不存在/无效的路径。）
     needs: check
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -27,10 +28,10 @@ jobs:
       - name: Purge jsDelivr cache
         run: |
           set -euo pipefail
-          URL="https://purge.jsdelivr.net/gh/sikongyue/astravia-design-system-templates@main/.astravia/design-templates.json"
+          URL="https://purge.jsdelivr.net/gh/maomaochong-ai/astravia-design-system-templates@main/.astravia/design-templates.json"
           echo "purging $URL"
           curl -sS --fail --max-time 60 "$URL" | tee /tmp/purge.json
           echo
-          # purge 是尽力而为：raw 兜底仍然是最新的，所以这一步失败不该让整条流水线红。
+          # purge 是尽力而为：失败不该让整条流水线红。
           grep -q '"status": *"finished"' /tmp/purge.json || echo "::warning::jsDelivr purge did not report finished"
         continue-on-error: true

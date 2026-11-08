@@ -135,14 +135,32 @@ UTF-8 字节计数，单个 ≤256KB 时直接内联进清单，避免 Windows �
 
 ## 更新多久到用户手上
 
-客户端首选 `raw.githubusercontent.com`（`max-age=300`），本地 TTL 5 分钟且带 ETag 条件
-请求。**合进 `main` 之后几分钟内、用户下次打开「设计」页就会看到**，不需要任何人工操作。
+客户端本地 TTL 5 分钟、带 ETag 条件请求。**合进 `main` 之后、用户下次打开「设计」页或点
+「刷新」就会看到**。
 
-jsDelivr 只是兜底。它对 `@main` 会缓存「分支→commit」的解析结果（12 小时），而且
-purge 单个文件刷不掉——实测调用 purge 返回 `finished`，内容依然是半天前的。所以
-**不要把它当首选源，也不要指望 purge 能救**。
+取数顺序要按实际客户端确认，别按文档假设。实测 `astravia-ui-design` 0.7.2 的 bundle 里
+源列表是 **jsDelivr 在前、`raw.githubusercontent.com` 在后**，且第一个能解析出条目的响应
+就直接采纳（`Ur=[jsdelivr, raw]`，见 `dist/assets/index-*.js`）：
 
-想立刻确认：在设计页点一下「刷新」会强制跳过本地 TTL。
+- 只要 jsDelivr 返回一份「旧但合法」的清单，raw 根本不会被请求。jsDelivr 对 `@main` 缓存
+  「分支→commit」解析结果（`s-maxage=43200`，即 12 小时），刚 push 完看到的仍可能是上一版。
+- 因此 **purge 是更新能否生效的关键路径，不是可选项**。`2026-11-08` 之前 CI 的 purge
+  地址还指着改名前的 `sikongyue/...`，purge 全打空，CDN 就长期发旧版本。改了仓库地址
+  记得同步改 `.github/workflows/catalog.yml` 里的 purge URL。
+- `raw.githubusercontent.com` 在部分网络（含国内直连）TCP 不通，兜底源可能根本不可用。
+
+验证一份清单到底新不新，别靠肉眼看页面：
+
+```bash
+curl -sSI https://cdn.jsdelivr.net/gh/maomaochong-ai/astravia-design-system-templates@main/.astravia/design-templates.json | grep -i etag
+# etag 前缀是十六进制字节数：0x50e4fe = 5,304,574，对得上本地文件就是新版本
+```
+
+客户端还会把最近一次成功抓到的清单缓在本地：`~/.astravia/plugin-data/astravia-ui-design/
+design-catalog/latest`（逻辑键是 `design-catalog/latest.json`，落盘时省掉扩展名）。
+刷新一直失败时它就会继续渲染旧数据——遇到「新增条目看不到」，先对比这份缓存的
+`fetchedAt` 与 `catalogVersion`。
+遇到「新增条目看不到」，先对比这份缓存的 `fetchedAt` 与 `catalogVersion`。
 
 ## 提交前检查清单
 
