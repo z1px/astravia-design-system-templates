@@ -7,14 +7,14 @@ Astravia 桌面端「设计」工作台的设计体系模板库。桌面端插�
 > 本项目由两个上游仓库整合而来：
 >
 > - **[vetta-design-templates](https://github.com/openvetta/vetta-design-templates)**（MIT）——
->   仓库机制（目录结构、`meta.json` 契约、`scripts/build-catalog.mjs` 校验、CI）与 24 条设计体系模板。
+>   仓库机制（目录结构、`meta.json` 契约、`scripts/build-catalog.mjs` 校验、CI）与 44 条设计体系模板。
 > - **[brands-design-md](https://github.com/ricocc/brands-design-md.git)** —— 69 个品牌的设计参考
 >   （`DESIGN.md` / `theme.css` / `tokens.json` / `preview.html` / 封面截图），经
 >   `scripts/convert-brands.mjs` 转换为本仓库条目格式并入。
 >
-> 条目合计 **82 个**：24 条（继承 vetta）+ 69 条（brands），其中 11 个重叠品牌
-> （airbnb / apple / duolingo / figma / linear / notion / shopify / slack / spotify / stripe / vercel）
-> 以 brands-design-md 版本为准。
+> 条目合计 **102 个**：44 条（继承 vetta，含 2026-11 同步的 19 条）+ 58 条（brands），
+> 另有 11 个重叠品牌（airbnb / apple / duolingo / figma / linear / notion / shopify / slack /
+> spotify / stripe / vercel）以 vetta 版本为准。
 
 ## Repository layout
 
@@ -44,7 +44,7 @@ scripts/convert-brands.mjs       # one-off converter for brands-design-md → te
 | `reference` | `spec` | material the agent consults while designing |
 | `remixable` | `package` | a finished design copied into a new project |
 
-当前 82 个条目全部为 `design-system`。
+当前 102 个条目全部为 `design-system`。
 
 ## Working in this repository
 
@@ -90,6 +90,36 @@ node scripts/build-catalog.mjs                 # 重新生成目录清单
 [awesome-design-md](https://github.com/VoltAgent/awesome-design-md)（MIT）；
 brands 系条目注明来自 [brands-design-md](https://github.com/ricocc/brands-design-md.git)。
 本仓库只存提炼后的规范文字与自己生成的预览，不存第三方抓取素材或品牌资源文件。
+
+## 上游同步记录
+
+### 2026-11-08 — vetta-design-templates
+
+拉入 19 条新体系（`order` 沿用上游的插空值，与原有用 10 间隔的条目交错）：
+
+| slug | 名称 | 形态 | `order` |
+| --- | --- | --- | --- |
+| site-stencil | Site Stencil | light / industrial | 15 |
+| pixel-pocket | Pixel Pocket | dark / playful | 25 |
+| meridian | Meridian | dark / observatory | 33 |
+| sumi-ink | Sumi Ink | light / craft | 35 |
+| late-edition | Late Edition | light / press | 42 |
+| lamp-room | Lamp Room | dark / editorial | 55 |
+| cyanotype | Cyanotype | dark / architecture | 65 |
+| first-frame | First Frame | dark / cinema | 72 |
+| wax-coat | Wax Coat | light / material | 75 |
+| field-drawer | Field Drawer | light / field | 82 |
+| y3k-chrome | Y3K Chrome | dark / future | 87 |
+| tape-diary | Tape Diary | light / diary | 95 |
+| firn | Firn | light / cold | 108 |
+| travertine | Travertine | light / luxury | 115 |
+| riso-press | Riso Press | light / print | 125 |
+| marquee-deco | Marquee Deco | dark / evening | 135 |
+| last-fitting | Last Fitting | dark / fashion | 145 |
+| blotter | Blotter | light / scent | 148 |
+| solarpunk | Solarpunk | light / civic | 152 |
+
+文本按上游原样收录（`DESIGN.md` / `theme.css` / `demo.html`），未做品牌词改写，便于下次同步直接对比。
 
 ## License
 
